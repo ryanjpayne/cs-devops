@@ -57,7 +57,7 @@ export REGISTRYBEARER=$(curl -X GET -s -u "${FALCON_ART_USERNAME}:${FALCON_ART_P
 
 **Get Daemonset Sensor Releases**
 ```
-### Get all
+### List all
 export LATESTSENSOR=$(curl -X GET -s -H "authorization: Bearer ${REGISTRYBEARER}" "https://registry.crowdstrike.com/v2/falcon-sensor/${FALCON_CLOUD_REGION}/release/falcon-sensor/tags/list"
 
 ### Get Latest
@@ -66,7 +66,7 @@ export LATESTSENSOR=$(curl -X GET -s -H "authorization: Bearer ${REGISTRYBEARER}
 
 **Get Container Sensor Releases**
 ```
-### Get all
+### List all
 export LATESTSENSOR=$(curl -X GET -s -H "authorization: Bearer ${REGISTRYBEARER}" "https://registry.crowdstrike.com/v2/falcon-container/${FALCON_CLOUD_REGION}/release/falcon-sensor/tags/list"
 
 ### Get Latest
