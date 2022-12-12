@@ -4,7 +4,7 @@ module "vpc" {
   name = var.vpc_name
   cidr = var.vpc_cidr
 
-  azs             = [var.az_1, var.az_2, var.az_3]
+  azs             = [var.az_1, var.az_2]
   private_subnets = [var.private_sub_1, var.private_sub_2]
   public_subnets  = [var.public_sub_1, var.public_sub_2]
 
@@ -18,7 +18,7 @@ module "vpc" {
 resource "aws_security_group" "security_group" {
   name        = "cloud-devops-sg"
   description = "Manage traffic for cloud-devops instances"
-  vpc_id      = module.vpc.id
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     description      = "All within VPC"

@@ -1,7 +1,13 @@
+data "aws_caller_identity" "current" {}
+
+locals {
+  account_id = data.aws_caller_identity.current.account_id
+}
 
 resource "aws_iam_role" "role" {
   name = "cloud-devops-role"
   path = "/"
+  permissions_boundary = "arn:aws:iam::${local.account_id}:policy/BoundaryForAdministratorAccess"
 
   assume_role_policy = <<EOF
 {
