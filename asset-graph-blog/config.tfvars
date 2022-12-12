@@ -16,3 +16,4 @@ enable_nat    = true
 #  EC2 Configuration
 instance_type      = "m5.large" # Must be Nitro
 shared_volume_size = 30
+key_pair = "cs-key"

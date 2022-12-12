@@ -39,3 +39,20 @@ variable "shared_volume_size" {
 variable "instance_type" {
   type = string
 }
+variable "key_pair" {
+  type = string
+}
+
+# CS Keys
+variable "client_id" {
+  type = string
+}
+variable "client_secret" {
+  type = string
+}
+variable "falcon_cloud" {
+  type = string
+}
+variable "cid" {
+  type = string
+}
