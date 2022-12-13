@@ -2,6 +2,9 @@
 variable "env_tag" {
   type = string
 }
+variable "region" {
+  type = string
+}
 
 # Vpc Configuration
 variable "vpc_name" {

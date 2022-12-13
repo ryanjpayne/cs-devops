@@ -1,6 +1,7 @@
 
 # Misc
-env_tag       = "cloud-devops"
+env_tag = "cloud-devops"
+region  = "us-west-2"
 
 # VPC Configuration
 vpc_name      = "cloud-devops-vpc"
@@ -17,3 +18,6 @@ enable_nat    = true
 instance_type      = "m5.large" # Must be Nitro
 shared_volume_size = 30
 key_pair = "cs-key"
+
+# CrowdStrike Config
+falcon_cloud_api = "api.crowdstrike.com"

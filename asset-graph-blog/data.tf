@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_ami" "amazon-2" {
   most_recent = true
 
