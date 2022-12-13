@@ -29,10 +29,12 @@ yum update -y
 cd /tmp
 export FALCON_CID=${var.cid}
 export FALCON_CLOUD_API=${var.falcon_cloud_api}
+export FALCON_CLIENT_ID=${var.client_id}
+export FALCON_CLIENT_SECRET=${var.client_secret}
 export TOKEN=$(curl \
 --silent \
 --header "Content-Type: application/x-www-form-urlencoded" \
---data "client_id=${var.client_id}&client_secret=${var.client_secret}" \
+--data "client_id=\$${FALCON_CLIENT_ID}&client_secret=\$${FALCON_CLIENT_SECRET}" \
 --request POST \
 --url "https://$FALCON_CLOUD_API/oauth2/token" | \
 jq -r '.access_token')
