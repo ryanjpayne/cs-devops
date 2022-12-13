@@ -1,3 +1,7 @@
+resource "aws_eip" "nat" {
+  vpc = true
+}
+
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
@@ -8,8 +12,10 @@ module "vpc" {
   private_subnets = [var.private_sub_1, var.private_sub_2]
   public_subnets  = [var.public_sub_1, var.public_sub_2]
 
-  enable_nat_gateway = var.enable_nat
-
+  enable_nat_gateway  = var.enable_nat
+  single_nat_gateway  = true
+  reuse_nat_ips       = true
+  external_nat_ip_ids = [aws_eip.nat.id]
   tags = {
     Environment = var.env_tag
   }

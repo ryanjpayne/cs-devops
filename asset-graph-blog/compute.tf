@@ -34,7 +34,7 @@ export FALCON_CLIENT_SECRET=${var.client_secret}
 export TOKEN=$(curl \
 --silent \
 --header "Content-Type: application/x-www-form-urlencoded" \
---data "client_id=\$${FALCON_CLIENT_ID}&client_secret=\$${FALCON_CLIENT_SECRET}" \
+--data "client_id=$${FALCON_CLIENT_ID}&client_secret=$${FALCON_CLIENT_SECRET}" \
 --request POST \
 --url "https://$FALCON_CLOUD_API/oauth2/token" | \
 jq -r '.access_token')
