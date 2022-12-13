@@ -50,7 +50,7 @@ variable "client_id" {
 variable "client_secret" {
   type = string
 }
-variable "falcon_cloud" {
+variable "falcon_cloud_api" {
   type = string
 }
 variable "cid" {

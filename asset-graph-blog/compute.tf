@@ -24,14 +24,11 @@ resource "aws_instance" "instance" {
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data = <<EOF
 #!/bin/bash
-
+yum install jq -y
+yum update -y
 cd /tmp
-
 export FALCON_CID=${var.cid}
-export FALCON_CLIENT_ID=${var.client_id}
-export FALCON_CLIENT_SECRET=${var.client_secret}
-export FALCON_CLOUD_API=${var.falcon_cloud}
-
+export FALCON_CLOUD_API=${var.falcon_cloud_api}
 export TOKEN=$(curl \
 --silent \
 --header "Content-Type: application/x-www-form-urlencoded" \
@@ -39,20 +36,15 @@ export TOKEN=$(curl \
 --request POST \
 --url "https://$FALCON_CLOUD_API/oauth2/token" | \
 jq -r '.access_token')
-
 export INSTALLER_ID=$(curl -X GET "https://api.crowdstrike.com/sensors/combined/installers/v1?limit=1&filter=os%3A%22Amazon%20Linux%22" \
 -H  "accept: application/json" \
 -H "authorization: Bearer $TOKEN" | jq -r '.resources[0].sha256')
-
 curl -X GET "https://api.crowdstrike.com/sensors/entities/download-installer/v1?id=$INSTALLER_ID" \
 -H  "accept: application/json" \
 -H  "authorization: Bearer $TOKEN" \
 -o falcon_installer.rpm
-
 yum install -y falcon_installer.rpm
-
 /opt/CrowdStrike/falconctl -s --cid=$FALCON_CID
-
 systemctl start falcon-sensor
 EOF
 
