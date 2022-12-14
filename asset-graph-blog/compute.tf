@@ -16,12 +16,14 @@ resource "aws_ebs_volume" "shared_volume" {
 }
 
 resource "aws_instance" "instance" {
-  count           = 3
-  key_name        = var.key_pair
-  ami             = data.aws_ami.amazon-2.id
-  subnet_id       = module.vpc.private_subnets[0]
-  instance_type   = var.instance_type
-  vpc_security_group_ids = [aws_security_group.security_group.id]
+  count                       = 3
+  key_name                    = var.key_pair
+  ami                         = data.aws_ami.amazon-2.id
+  subnet_id                   = module.vpc.private_subnets[0]
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [aws_security_group.security_group.id]
+  associate_public_ip_address = false
+  iam_instance_profile        = aws_iam_instance_profile.test_profile.name
   user_data = <<EOF
 #!/bin/bash
 yum install jq -y
