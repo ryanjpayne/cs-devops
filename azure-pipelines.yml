@@ -8,9 +8,8 @@ pool:
 
 steps:
 - bash: |
-    sudo apt-get install -y docker.io
-    sudo snap install docker
-    docker --version
+    sudo apt-get update -y
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
   displayName: 'Get Dependencies'
 
 - bash: |
@@ -39,6 +38,8 @@ steps:
   displayName: 'Get Latest Sensor Version'
 
 - bash: |
+    echo $FALCON_ART_USERNAME
+    echo $FALCON_ART_PASSWORD
     echo $FALCON_ART_PASSWORD | sudo docker login -u $FALCON_ART_USERNAME --password-stdin registry.crowdstrike.com
     sudo docker pull $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG
   displayName: 'Pull Container Sensor Image'
