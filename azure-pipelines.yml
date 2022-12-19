@@ -20,7 +20,6 @@ steps:
     --request POST \
     --url "https://$(FALCON_CLOUD_API)/oauth2/token" | \
     jq -r '.access_token')
-    echo $FALCON_API_BEARER_TOKEN
     echo "##vso[task.setvariable variable=FALCON_API_BEARER_TOKEN]$FALCON_API_BEARER_TOKEN"
   displayName: 'Get Falcon API Bearer Token'
 
@@ -29,23 +28,16 @@ steps:
     https://$(FALCON_CLOUD_API)/container-security/entities/image-registry-credentials/v1 | \
     jq -r '.resources[].token')
     export FALCON_ART_USERNAME="fc-$(echo $(FALCON_CID) | awk '{ print tolower($0) }' | cut -d'-' -f1)"
-    echo $FALCON_ART_USERNAME
-    echo $FALCON_ART_PASSWORD
     echo "##vso[task.setvariable variable=FALCON_ART_PASSWORD]$FALCON_ART_PASSWORD"
     echo "##vso[task.setvariable variable=FALCON_ART_USERNAME]$FALCON_ART_USERNAME"
   displayName: 'Get Falcon Registry Credentials'
 
 - bash: |
     export REGISTRYBEARER=$(curl -X GET -s -u "$(FALCON_ART_USERNAME):$(FALCON_ART_PASSWORD)" "https://registry.crowdstrike.com/v2/token?=${FALCON_ART_USERNAME}&scope=repository:$SENSORTYPE/$(FALCON_CLOUD_REGION)/release/falcon-sensor:pull&service=registry.crowdstrike.com" | jq -r '.token')
-    export LATESTSENSOR=$(curl -X GET -s -H "authorization: Bearer $(REGISTRYBEARER)" "https://registry.crowdstrike.com/v2/falcon-container/$(FALCON_CLOUD_REGION)/release/falcon-sensor/tags/list" | jq -r '.tags[-1]')
+    export FALCON_IMAGE_TAG=$(curl -X GET -s -H "authorization: Bearer $REGISTRYBEARER" "https://registry.crowdstrike.com/v2/falcon-container/$(FALCON_CLOUD_REGION)/release/falcon-sensor/tags/list" | jq -r '.tags[-1]')
     export FALCON_IMAGE_REPO="registry.crowdstrike.com/falcon-container/$(FALCON_CLOUD_REGION)/release/falcon-sensor"
-    export FALCON_IMAGE_TAG=$LATESTSENSOR
-    echo $REGISTRYBEARER
-    echo $LATESTSENSOR
-    echo $FALCON_IMAGE_REPO
-    echo $FALCON_IMAGE_TAG
+    echo "Latest Sensor is $FALCON_IMAGE_TAG"
     echo "##vso[task.setvariable variable=REGISTRYBEARER]$REGISTRYBEARER"
-    echo "##vso[task.setvariable variable=LATESTSENSOR]$LATESTSENSOR"
     echo "##vso[task.setvariable variable=FALCON_IMAGE_REPO]$FALCON_IMAGE_REPO"
     echo "##vso[task.setvariable variable=FALCON_IMAGE_TAG]$FALCON_IMAGE_TAG"
   displayName: 'Get Latest Sensor Version'
