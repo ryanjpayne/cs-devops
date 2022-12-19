@@ -1,0 +1,46 @@
+# Pipeline to Pull Latest Falcon Container Sensor and Push to Your AWS ECR Registry
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: |
+    apt install -y jq docker unzip
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    ./aws/install
+  displayName: 'Get Dependencies'
+
+- script: |
+    export FALCON_API_BEARER_TOKEN=$(curl \
+    --silent \
+    --header "Content-Type: application/x-www-form-urlencoded" \
+    --data "client_id=$env:CLIENT_ID&client_secret=$env:CLIENT_SECRET" \
+    --request POST \
+    --url "https://$(FALCON_CLOUD_API)/oauth2/token" | \
+    jq -r '.access_token')
+    export FALCON_ART_PASSWORD=$(curl --silent -X GET -H "authorization: Bearer ${FALCON_API_BEARER_TOKEN}" \
+    https://$(FALCON_CLOUD_API)/container-security/entities/image-registry-credentials/v1 | \
+    jq -r '.resources[].token')
+    export FALCON_ART_USERNAME="fc-$(echo $(FALCON_CID) | awk '{ print tolower($0) }' | cut -d'-' -f1)"
+  displayName: 'Get Private CrowdStrike Registry Credentials From API'
+  env:
+    CLIENT_ID = $(FALCON_CLIENT_ID)
+    CLIENT_SECRET = $(FALCON_CLIENT_SECRET)
+
+- script: |
+    export REGISTRYBEARER=$(curl -X GET -s -u "${FALCON_ART_USERNAME}:${FALCON_ART_PASSWORD}" "https://registry.crowdstrike.com/v2/token?=${FALCON_ART_USERNAME}&scope=repository:$SENSORTYPE/$(FALCON_CLOUD_REGION)/release/falcon-sensor:pull&service=registry.crowdstrike.com" | jq -r '.token')
+    export LATESTSENSOR=$(curl -X GET -s -H "authorization: Bearer ${REGISTRYBEARER}" "https://registry.crowdstrike.com/v2/falcon-container/$(FALCON_CLOUD_REGION)/release/falcon-sensor/tags/list" | jq -r '.tags[-1]')
+    export FALCON_IMAGE_REPO="registry.crowdstrike.com/falcon-container/$(FALCON_CLOUD_REGION)/release/falcon-sensor"
+    export FALCON_IMAGE_TAG=$LATESTSENSOR
+  displayName: 'Get Latest Sensor Version'
+
+- script: |
+    echo $FALCON_ART_PASSWORD | docker login -u $FALCON_ART_USERNAME --password-stdin registry.crowdstrike.com
+    docker pull $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG
+    docker tag $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/falcon-sensor/falcon-container:$(ECR_IMAGE_TAG)
+    docker push $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/falcon-sensor/falcon-container:$(ECR_IMAGE_TAG)
+  displayName: 'Pull/Push Container Sensor Image to ECR'
