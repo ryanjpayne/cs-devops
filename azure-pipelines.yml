@@ -1,5 +1,6 @@
 # Pipeline to Pull Latest Falcon Container Sensor and Push to Your AWS ECR Registry
 
+
 trigger:
 - main
 
@@ -7,9 +8,9 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- bash: |
-    sudo apt-get update -y
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+- task: DockerInstaller@0
+  inputs:
+    dockerVersion: '17.09.0-ce'
   displayName: 'Get Dependencies'
 
 - bash: |
