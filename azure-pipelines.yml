@@ -23,9 +23,6 @@ steps:
     jq -r '.access_token')
     echo $FALCON_API_BEARER_TOKEN
     echo "##vso[task.setvariable variable=FALCON_API_BEARER_TOKEN]$FALCON_API_BEARER_TOKEN"
-  env:
-    CLIENT_ID: $(FALCON_CLIENT_ID)
-    CLIENT_SECRET: $(FALCON_CLIENT_SECRET)
   displayName: 'Get Falcon API Bearer Token'
 
 - bash: |
