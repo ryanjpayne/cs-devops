@@ -26,10 +26,11 @@ steps:
     https://$(FALCON_CLOUD_API)/container-security/entities/image-registry-credentials/v1 | \
     jq -r '.resources[].token')
     export FALCON_ART_USERNAME="fc-$(echo $(FALCON_CID) | awk '{ print tolower($0) }' | cut -d'-' -f1)"
-  displayName: 'Get Private CrowdStrike Registry Credentials From API'
   env:
     CLIENT_ID = $(FALCON_CLIENT_ID)
     CLIENT_SECRET = $(FALCON_CLIENT_SECRET)
+  displayName: 'Get Private CrowdStrike Registry Credentials From API'
+
 
 - bash: |
     export REGISTRYBEARER=$(curl -X GET -s -u "${FALCON_ART_USERNAME}:${FALCON_ART_PASSWORD}" "https://registry.crowdstrike.com/v2/token?=${FALCON_ART_USERNAME}&scope=repository:$SENSORTYPE/$(FALCON_CLOUD_REGION)/release/falcon-sensor:pull&service=registry.crowdstrike.com" | jq -r '.token')
