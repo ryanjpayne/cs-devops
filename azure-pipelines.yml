@@ -22,6 +22,7 @@ steps:
     --url "https://$(FALCON_CLOUD_API)/oauth2/token" | \
     jq -r '.access_token')
     echo $FALCON_API_BEARER_TOKEN
+    echo "##vso[task.setvariable variable=FALCON_API_BEARER_TOKEN]$FALCON_API_BEARER_TOKEN"
   env:
     CLIENT_ID: $(FALCON_CLIENT_ID)
     CLIENT_SECRET: $(FALCON_CLIENT_SECRET)
@@ -34,6 +35,8 @@ steps:
     export FALCON_ART_USERNAME="fc-$(echo $(FALCON_CID) | awk '{ print tolower($0) }' | cut -d'-' -f1)"
     echo $FALCON_ART_USERNAME
     echo $FALCON_ART_PASSWORD
+    echo "##vso[task.setvariable variable=FALCON_ART_PASSWORD]$FALCON_ART_PASSWORD"
+    echo "##vso[task.setvariable variable=FALCON_ART_USERNAME]$FALCON_ART_USERNAME"
   displayName: 'Get Falcon Registry Credentials'
 
 - bash: |
@@ -45,11 +48,13 @@ steps:
     echo $LATESTSENSOR
     echo $FALCON_IMAGE_REPO
     echo $FALCON_IMAGE_TAG
+    echo "##vso[task.setvariable variable=REGISTRYBEARER]$REGISTRYBEARER"
+    echo "##vso[task.setvariable variable=LATESTSENSOR]$LATESTSENSOR"
+    echo "##vso[task.setvariable variable=FALCON_IMAGE_REPO]$FALCON_IMAGE_REPO"
+    echo "##vso[task.setvariable variable=FALCON_IMAGE_TAG]$FALCON_IMAGE_TAG"
   displayName: 'Get Latest Sensor Version'
 
 - bash: |
-    echo $FALCON_ART_USERNAME
-    echo $FALCON_ART_PASSWORD
     echo $(FALCON_ART_PASSWORD) | sudo docker login -u $(FALCON_ART_USERNAME) --password-stdin registry.crowdstrike.com
     sudo docker pull $(FALCON_IMAGE_REPO):$(FALCON_IMAGE_TAG)
   displayName: 'Pull Container Sensor Image'
