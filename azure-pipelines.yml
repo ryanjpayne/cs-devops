@@ -8,7 +8,7 @@ pool:
 
 steps:
 - bash: |
-    apt install -y jq docker unzip
+    sudo apt-get install -y jq docker
   displayName: 'Get Dependencies'
 
 - bash: |
@@ -38,9 +38,9 @@ steps:
 
 - bash: |
     echo $FALCON_ART_PASSWORD | docker login -u $FALCON_ART_USERNAME --password-stdin registry.crowdstrike.com
-    docker pull $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG
-    docker tag $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/falcon-sensor/falcon-container:$(ECR_IMAGE_TAG)
-    docker push $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/falcon-sensor/falcon-container:$(ECR_IMAGE_TAG)
+    sudo docker pull $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG
+    sudo docker tag $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/falcon-sensor/falcon-container:$(ECR_IMAGE_TAG)
+    sudo docker push $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/falcon-sensor/falcon-container:$(ECR_IMAGE_TAG)
   env:
     AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
     AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
