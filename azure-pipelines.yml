@@ -27,8 +27,8 @@ steps:
     jq -r '.resources[].token')
     export FALCON_ART_USERNAME="fc-$(echo $(FALCON_CID) | awk '{ print tolower($0) }' | cut -d'-' -f1)"
   env:
-    CLIENT_ID = $(FALCON_CLIENT_ID)
-    CLIENT_SECRET = $(FALCON_CLIENT_SECRET)
+    CLIENT_ID: $(FALCON_CLIENT_ID)
+    CLIENT_SECRET: $(FALCON_CLIENT_SECRET)
   displayName: 'Get Private CrowdStrike Registry Credentials From API'
 
 
@@ -44,7 +44,7 @@ steps:
     docker pull $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG
     docker tag $FALCON_IMAGE_REPO:$FALCON_IMAGE_TAG $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/falcon-sensor/falcon-container:$(ECR_IMAGE_TAG)
     docker push $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/falcon-sensor/falcon-container:$(ECR_IMAGE_TAG)
-  displayName: 'Pull/Push Container Sensor Image to ECR'
   env:
-    AWS_ACCESS_KEY_ID = $(AWS_ACCESS_KEY_ID)
-    AWS_SECRET_ACCESS_KEY = $(AWS_SECRET_ACCESS_KEY)
+    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+  displayName: 'Pull/Push Container Sensor Image to ECR'
