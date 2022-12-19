@@ -9,9 +9,6 @@ pool:
 steps:
 - bash: |
     apt install -y jq docker unzip
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    unzip awscliv2.zip
-    ./aws/install
   displayName: 'Get Dependencies'
 
 - bash: |
