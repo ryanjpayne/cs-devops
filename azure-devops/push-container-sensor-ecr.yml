@@ -11,7 +11,7 @@ steps:
 - task: DockerInstaller@0
   inputs:
     dockerVersion: '17.09.0-ce'
-  displayName: 'Get Dependencies'
+  displayName: 'Install Docker'
 
 - bash: |
     export FALCON_API_BEARER_TOKEN=$(curl \
