@@ -1,1 +1,24 @@
+# Pipeline to Pull Task Definition JSON, and Run Falcon Container Sensor Patch Utility .
 
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- bash: |
+    sudo
+  displayName: 'Retrive ECS Task Spec File'
+
+- bash: |
+    sudo
+  displayName: 'Creating a Pull Token'
+
+- bash: |
+    sudo
+  displayName: 'Patch ECS Task Spec File'
+
+- bash: |
+    sudo
+  displayName: 'Register New ECS Task'
