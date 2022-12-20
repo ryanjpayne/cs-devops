@@ -22,12 +22,9 @@ steps:
 
 - bash: |
     wget https://raw.githubusercontent.com/ryanjpayne/cs-devops/main/ecs/dummy-task.json -P /tmp/
-  displayName: 'Retrive ECS Task Spec File'
-
-- bash: |
     sed -i "s/<AWS_ACCOUNT_ID>/$(AWS_ACCOUNT_ID)/" /tmp/dummy-task.json
     sed -i "s/<AWS_REGION>/$(AWS_REGION)/" /tmp/dummy-task.json
-  displayName: 'Set ECS Task Spec File AWS Config'
+  displayName: 'Retrieve ECS Task Spec File and Set AWS Parameters'
 
 - bash: |
     aws ecr get-login-password --region $(AWS_REGION) | sudo docker login --username AWS --password-stdin $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
@@ -36,7 +33,7 @@ steps:
   env:
     AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
     AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-  displayName: 'Creating a Pull Token'
+  displayName: 'Create a Pull Token for ECR'
 
 - bash: |
     sudo docker run -v /tmp/:/var/run/spec \
@@ -45,13 +42,12 @@ steps:
     -image "$(FALCON_CONTAINER_SENSOR_REGISTRY)" \
     -pulltoken $(PULL_TOKEN) \
     -ecs-spec-file /var/run/spec/dummy-task.json > /tmp/patched-dummy-task.json
-  displayName: 'Patch ECS Task Spec File'
+  displayName: 'Run Falcon Patching Utility on ECS Task Spec File'
 
 - bash: |
     cd /tmp
-    ls
     aws ecs register-task-definition --cli-input-json file://patched-dummy-task.json
   env:
     AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
     AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-  displayName: 'Register New ECS Task'
+  displayName: 'Register Patched ECS Task'
