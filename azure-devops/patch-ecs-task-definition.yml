@@ -1,5 +1,13 @@
 # Pipeline to Pull Task Definition JSON, Run Falcon Container Sensor Patch Utility and Register New Task with ECS.
 
+# Required Variables
+# AWS_ACCOUNT_ID
+# AWS_REGION
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
+# FALCON_CID
+# FALCON_CONTAINER_SENSOR_REGISTRY
+
 trigger:
 - main
 
