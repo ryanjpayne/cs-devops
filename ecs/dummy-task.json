@@ -14,7 +14,7 @@
             "logDriver": "awslogs",
             "options": { 
                "awslogs-group" : "/ecs/fargate-task-definition",
-               "awslogs-region": "us-west-2",
+               "awslogs-region": "<AWS_REGION>",
                "awslogs-stream-prefix": "ecs"
             }
          },
@@ -29,7 +29,7 @@
       }
    ],
    "cpu": "256",
-   "executionRoleArn": "arn:aws:iam::012345678910:role/ecsTaskExecutionRole",
+   "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole",
    "family": "fargate-task-definition",
    "memory": "512",
    "networkMode": "awsvpc",
