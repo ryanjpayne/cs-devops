@@ -44,7 +44,7 @@ steps:
     -cid "$(FALCON_CID)" \
     -image "$(FALCON_CONTAINER_SENSOR_REGISTRY)" \
     -pulltoken $(PULL_TOKEN) \
-    -ecs-spec-file /var/run/spec/dummy-task.json > patched-dummy-task.json
+    -ecs-spec-file /var/run/spec/dummy-task.json > /tmp/patched-dummy-task.json
   displayName: 'Patch ECS Task Spec File'
 
 - bash: |
