@@ -7,18 +7,38 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: DockerInstaller@0
+  inputs:
+    dockerVersion: '17.09.0-ce'
+  displayName: 'Install Docker'
+
 - bash: |
-    sudo
+    wget https://raw.githubusercontent.com/ryanjpayne/cs-devops/main/ecs/dummy-task.json -P /tmp/
   displayName: 'Retrive ECS Task Spec File'
 
 - bash: |
-    sudo
+    sed -i "s/<AWS_ACCOUNT_ID>/$(AWS_ACCOUNT_ID)/" /tmp/dummy-task.json
+    sed -i "s/<AWS_REGION>/$(AWS_REGION)/" /tmp/dummy-task.json
+  displayName: 'Set ECS Task Spec File AWS Config'
+
+- bash: |
+    export PULL_TOKEN=$(echo "{\"auths\":{\"$(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com\":{\"auth\": \"$(echo AWS:$(aws ecr get-login-password)|base64 -w 0)\"}}}" | base64 -w 0) 
+    echo "##vso[task.setvariable variable=PULL_TOKEN]$PULL_TOKEN"
   displayName: 'Creating a Pull Token'
 
 - bash: |
-    sudo
+    sudo docker run -v /tmp/:/var/run/spec \
+    --rm "$(FALCON_CONTAINER_SENSOR_REGISTRY)" \
+    -cid "$(FALCON_CID)" \
+    -image "$(FALCON_CONTAINER_SENSOR_REGISTRY)" \
+    -pulltoken $(PULL_TOKEN) \
+    -ecs-spec-file /var/run/spec/dummy-task.json > patched-dummy-task.json
   displayName: 'Patch ECS Task Spec File'
 
 - bash: |
-    sudo
+    cd /tmp
+    aws ecs register-task-definition --cli-input-json file://patched-dummy-task.json
+  env:
+    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
   displayName: 'Register New ECS Task'
