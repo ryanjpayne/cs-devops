@@ -35,12 +35,16 @@ steps:
   displayName: 'Creating a Pull Token'
 
 - bash: |
+    aws ecr get-login-password --region $(AWS_REGION) | sudo docker login --username AWS --password-stdin $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
     sudo docker run -v /tmp/:/var/run/spec \
     --rm "$(FALCON_CONTAINER_SENSOR_REGISTRY)" \
     -cid "$(FALCON_CID)" \
     -image "$(FALCON_CONTAINER_SENSOR_REGISTRY)" \
     -pulltoken $(PULL_TOKEN) \
     -ecs-spec-file /var/run/spec/dummy-task.json > patched-dummy-task.json
+  env:
+    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
   displayName: 'Patch ECS Task Spec File'
 
 - bash: |
