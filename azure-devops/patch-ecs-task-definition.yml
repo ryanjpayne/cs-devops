@@ -30,25 +30,26 @@ steps:
   displayName: 'Set ECS Task Spec File AWS Config'
 
 - bash: |
+    aws ecr get-login-password --region $(AWS_REGION) | sudo docker login --username AWS --password-stdin $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
     export PULL_TOKEN=$(echo "{\"auths\":{\"$(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com\":{\"auth\": \"$(echo AWS:$(aws ecr get-login-password)|base64 -w 0)\"}}}" | base64 -w 0) 
     echo "##vso[task.setvariable variable=PULL_TOKEN]$PULL_TOKEN"
+  env:
+    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
   displayName: 'Creating a Pull Token'
 
 - bash: |
-    aws ecr get-login-password --region $(AWS_REGION) | sudo docker login --username AWS --password-stdin $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
     sudo docker run -v /tmp/:/var/run/spec \
     --rm "$(FALCON_CONTAINER_SENSOR_REGISTRY)" \
     -cid "$(FALCON_CID)" \
     -image "$(FALCON_CONTAINER_SENSOR_REGISTRY)" \
     -pulltoken $(PULL_TOKEN) \
     -ecs-spec-file /var/run/spec/dummy-task.json > patched-dummy-task.json
-  env:
-    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
   displayName: 'Patch ECS Task Spec File'
 
 - bash: |
     cd /tmp
+    ls
     aws ecs register-task-definition --cli-input-json file://patched-dummy-task.json
   env:
     AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
