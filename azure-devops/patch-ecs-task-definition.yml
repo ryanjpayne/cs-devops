@@ -44,6 +44,16 @@ steps:
     -ecs-spec-file /var/run/spec/dummy-task.json > /tmp/patched-dummy-task.json
   displayName: 'Run Falcon Patching Utility on ECS Task Spec File'
 
+- task: CopyFiles@2
+  inputs:
+    contents: '/tmp/patched-dummy-task.json'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: PatchedTask
+
 - bash: |
     cd /tmp
     aws ecs register-task-definition --cli-input-json file://patched-dummy-task.json
