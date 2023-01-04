@@ -44,15 +44,9 @@ steps:
     -ecs-spec-file /var/run/spec/dummy-task.json > /tmp/patched-dummy-task.json
   displayName: 'Run Falcon Patching Utility on ECS Task Spec File'
 
-- task: CopyFiles@2
-  inputs:
-    contents: '**/tmp/**'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: PatchedTask
+- bash: |
+    sudo cat /tmp/patched-dummy-task.json
+  displayName: 'Print Patched Task Spec File'
 
 - bash: |
     cd /tmp
