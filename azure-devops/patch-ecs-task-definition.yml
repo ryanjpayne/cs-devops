@@ -50,7 +50,7 @@ steps:
 
 - bash: |
     cd /tmp
-    aws ecs register-task-definition --cli-input-json file://patched-dummy-task.json
+    aws ecs register-task-definition --cli-input-json file://dummy-task.json
   env:
     AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
     AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
